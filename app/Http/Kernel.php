@@ -59,6 +59,7 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'login' => \App\Http\Middleware\LoginMiddleware::class,//后台中间件
+        'home_user' => \App\Http\Middleware\HomeMiddleware::class,//后台中间件
         'client' => \App\Http\Middleware\ClientMiddleware::class,//前台科研服务客户管理中间件
     ];
 }

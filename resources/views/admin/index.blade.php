@@ -10,8 +10,9 @@
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <link rel="stylesheet" href="/Xadmin/css/font.css">
     <link rel="stylesheet" href="/Xadmin/css/xadmin.css">
-    <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script src="/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
 
     <script type="text/javascript" src="/Xadmin/js/xadmin.js"></script>
     <script type="text/javascript" src="/Xadmin/js/cookie.js"></script>

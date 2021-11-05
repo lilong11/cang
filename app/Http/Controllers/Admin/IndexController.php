@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use Excel;
-use Auth;
 use DB;
 use \App\Model\Excel_log;
 use App\Model\User;
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 

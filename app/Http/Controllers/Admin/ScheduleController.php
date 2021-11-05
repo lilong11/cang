@@ -66,7 +66,6 @@ class ScheduleController extends Controller
         $tab->Customer = $request->input('Customer','');
         $tab->RollCompleted = $request->input('RollCompleted');
         if ($tab->save()){
-            //判断用户是否存在
             $request->flashExcept('_token','password');
             return redirect($_SERVER['HTTP_REFERER'])->with('1', 'create prosperity');
         }else{
@@ -102,10 +101,6 @@ class ScheduleController extends Controller
                 $BundleWeight = $value->bundleweight;
 
                	$sum = $BundleLength+$BundleWidth+$BundleHeight+$BundleWeight;
-               	// dd($sum);	
-// if($sum < 4000){
-// 	dd($value);
-// }
 
 
 
