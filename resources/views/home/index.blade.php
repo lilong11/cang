@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>index</title>
+    <title>Forecasting Scheduling Wizard-index</title>
 </head>
 <style>
     body{
@@ -56,6 +56,8 @@
 
 <div style="" id="nav1">
     <ul class="layui-nav" style="padding-left: 115px" lay-filter="">
+        <li class="layui-nav-item">        <img src="/img/logo.jpg" style="width: 200px;height: 50px" alt="">
+        </li>
         <li class="layui-nav-item"><a href="/indexs">index</a></li>
 
         <li class="layui-nav-item"><a href="/index/report">report</a></li>
@@ -101,6 +103,11 @@
                 </div>
                 <div style="margin-top: 100px" class="layui-progress layui-progress-big" lay-filter="demo" lay-showPercent="yes">
                     <div class="layui-progress-bar layui-bg-green" lay-percent="{{Session::get('round')}}%"></div>
+                </div>
+                <br>
+                <p>faild:</p>
+                <div style="" class="layui-progress layui-progress-big" lay-filter="demo" lay-showPercent="yes">
+                    <div class="layui-progress-bar " style="background-color: red" lay-percent="{{100-Session::get('round')}}%"></div>
                 </div>
             </div>
         @endif

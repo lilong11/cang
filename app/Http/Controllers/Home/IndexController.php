@@ -11,6 +11,7 @@ use \App\Model\Producing_bundle;
 use \App\Model\Excel_log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use function Complex\asec;
 
 class IndexController extends Controller
 {
@@ -151,16 +152,12 @@ class IndexController extends Controller
     }
 
     public function report(){
-        $Rolling_schedule = count(Rolling_schedule::all());
-        $Producing_bundle = count(Producing_bundle::all());
+        $data_list = Rolling_schedule::all();
+        $Rolling_schedule = count($data_list);
+        $data_bundle_list = Producing_bundle::all();
+        $Producing_bundle = count($data_bundle_list);
         $data_bundle_log =  count(Excel_log::where('Model_table','producing bundle')->get());
         $data_Schedule_log = count(Excel_log::where('Model_table','Rolling Schedule')->get());
-//        if ($Rolling_schedule&&$Producing_bundle&&$data_bundle_log){
-//
-//        }else{
-//            $round_Schedule =[];
-//            $round_bundle =[];
-//        }
         if ($data_bundle_log == 0){
             $round_bundle = 100;
         }else{
@@ -169,6 +166,19 @@ class IndexController extends Controller
             $round_bundle = round($data_bundle_log/$ffff*100);
 //            $round_bundle = round($Producing_bundle/$data_bundle_log*100,2);
         }
+       $date_lists = DB::table('producing_bundle')->select('report_name','created_at')->get();
+        foreach ($date_lists as $v){
+           $report_name_list[] = $v->report_name;
+           $created_at_list[] = $v->created_at;
+        }
+
+        $date_list2 =  array_unique($report_name_list);
+        $created_at_list2 =  array_unique($created_at_list);
+        $date_list = array_combine($date_list2,$created_at_list2);
+//        dd($date_list);
+//        $data_list = Rolling_schedule::where('name')->all();
+
+
 
         if ($data_Schedule_log == 0){
             $round_Schedule = 100;
@@ -180,7 +190,7 @@ class IndexController extends Controller
 //            $round_Schedule = round($Rolling_schedule/$data_Schedule_log*100,2);
         }
 
-
+//        DB::table('producing_bundle')->select('name', 'email as user_email')->get();
 
         $log_data = Excel_log::where('Model_table','producing bundle')->get();
         if (!empty($log_data[0])){
@@ -199,14 +209,50 @@ class IndexController extends Controller
             $v['BundleHeight'],
             ];
         }
+        foreach ($log_data as $v){
+           $MaterialDescription[] = $v['MaterialDescription'];
+        }
+            $arr_list = array_count_values($MaterialDescription);//计算出现的条数
+            $array_del = array_unique($arr_list);//删除数组中的重复
+            $array_del2 = array_unique($arr_list);//删除数组中的重复
+            rsort($array_del2);//对数组逆向排序
+            $list_he = array_sum($array_del2);//数组中的所有和
+            arsort($array_del);//对数组逆向排序
+           $arr_img = array_slice($array_del,0,5);//取出数组中前5个数据
+           $arr_img2 = array_slice($array_del,0,5);//取出数组中前5个数据
+            sort($arr_img);//计算百分比变量
+//dd($arr_img2);
+            foreach ($arr_img2 as $k=>$v){
+                 $k_list[] =$k;
+            }
+            $k_list[5] ="others";
+//            dump($k_list);
+//            dd($k_list);
+//            $list_he //总数
+//            $arr_img[0] //单个数
+            foreach ($arr_img as $v){
+                $cpl[] =round( $v/$list_he * 100 , 2);
+
+            }
+//            $cpl[1] =round( $arr_img[1]/$list_he * 100 , 2);
+//            $cpl[2] =round( $arr_img[2]/$list_he * 100 , 2);
+//            $cpl[3] =round( $arr_img[3]/$list_he * 100 , 2);
+//            $cpl[4] =round( $arr_img[4]/$list_he * 100 , 2);
+            $cpl[5] =100-array_sum($cpl);
+            $list =array_combine($cpl,$k_list);//合并成一个新的数组
+//            dd($list);
+//            dump($list);
+
             $BundleLengths =  array_reduce($data_sum, 'array_merge', array());
             $BundleWidths =  array_reduce($BundleWidth, 'array_merge', array());
             $BundleHeights =  array_reduce($BundleHeight, 'array_merge', array());
-
             $BundleLength = array_count_values($BundleLengths);
             $BundleWidth_data = array_count_values($BundleWidths);
             $BundleHeight_data = array_count_values($BundleHeights);
 
+            arsort($BundleLength);
+            arsort($BundleWidth_data);
+            arsort($BundleHeight_data);
 
             $round_Schedule_log = round($data_Schedule_log/$Rolling_schedule*100,2);
             $round_bundle_log = round($data_bundle_log/$Producing_bundle*100,2);
@@ -219,7 +265,8 @@ class IndexController extends Controller
 
         }
 
-        return view('home.report',compact('log_data','BundleHeight_data','BundleWidth_data','BundleLength','Rolling_schedule','round_bundle_log','round_Schedule_log','round_bundle','round_Schedule','Producing_bundle','data_bundle_log','data_Schedule_log'));
+
+        return view('home.report',compact('list','date_list','log_data','BundleHeight_data','BundleWidth_data','BundleLength','Rolling_schedule','round_bundle_log','round_Schedule_log','round_bundle','round_Schedule','Producing_bundle','data_bundle_log','data_Schedule_log'));
     }
 
 
@@ -391,10 +438,11 @@ class IndexController extends Controller
                             'Mill' =>$v['Mill'],
                             'Customer' =>$v['Customer'],
                             'RollCompleted' =>$v['RollCompleted'],
-                            'report_name' =>$request->report_name,
+                            'report_name' =>"$request->report_name",
+                            'created_at' =>date("Y-m-d h:i:s"),
+                            'updated_at' =>date("Y-m-d h:i:s"),
                         ];
                     }
-
                     if( $sum >= 4000){
                         $data_log[] = [
                             'Facility' =>$v['Facility'],
@@ -424,14 +472,14 @@ class IndexController extends Controller
                             'Customer' =>$v['Customer'],
                             'RollCompleted' =>$v['RollCompleted'],
                             'Model_table' =>'producing bundle',
-                            'report_name' =>$request->report_name,
+                            'report_name' =>"$request->report_name",
                             'created_at' =>date("Y-m-d h:i:s"),
                             'updated_at' =>date("Y-m-d h:i:s"),
                         ];
                     }
 
                 }
-
+//dd($data_sum[0]);
 
 //                bundlelength
                 $add_count =	count($data_sum);
@@ -562,11 +610,12 @@ class IndexController extends Controller
                             'Mill' =>$v['Mill'],
                             'Customer' =>$v['Customer'],
                             'RollCompleted' =>$v['RollCompleted'],
-
+                            'report_name' =>"$request->report_name",
+                            'created_at' =>date("Y-m-d h:i:s"),
+                            'updated_at' =>date("Y-m-d h:i:s"),
                         ];
 
                     }
-
                     if( $sum >= 4000){
                         $data_log[] = [
                             'Facility' =>$v['Facility'],
@@ -603,6 +652,7 @@ class IndexController extends Controller
 
 
                 }
+//                dd($data_sum[0]);
 
 
 

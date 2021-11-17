@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>report</title>
+    <title>Forecasting Scheduling Wizard-report</title>
     <script src="/js/echarts.min.js"></script>
     <link rel="stylesheet" href="/Xadmin/css/font.css">
     <link rel="stylesheet" href="/Xadmin/css/xadmin.css">
@@ -39,6 +39,8 @@
 
 <div style="" id="nav1">
     <ul class="layui-nav" style="padding-left: 115px" lay-filter="">
+        <li class="layui-nav-item">        <img src="/img/logo.jpg" style="width: 200px;height: 50px" alt="">
+        </li>
         <li class="layui-nav-item"><a href="/indexs">index</a></li>
 
         <li class="layui-nav-item"><a href="/index/report">report</a></li>
@@ -61,8 +63,9 @@
     </script>
 </div>
 <br>
-<div style="width: 100%;background-color: #fff;height: 350px;margin-bottom: 20px">
-    <div style="width: 1280px;padding:20px;height: 300px;margin: 0 auto;">
+<div style="width: 100%;background-color: #fff;margin-bottom: 20px">
+    <div style="width: 1280px;padding:20px; margin: 0 auto;">
+
         <div class="x-nav">
         <span class="layui-breadcrumb" style="visibility: visible;">
           <a href="/indexs">get back</a><span lay-separator="">/</span>
@@ -99,7 +102,7 @@
                     @if(empty($round_bundle))
                         0
                     @else
-                        {{$round_bundle}}%
+                        {{100-$round_bundle}}%
                     @endif
                 </td>
                 <td>
@@ -110,11 +113,12 @@
                     @endif
                 </td>
                 <td>
-                    @if(empty($round_bundle))
-                        0
-                    @else
-                        {{100-$round_bundle}}%
-                    @endif
+
+                        @if(empty($round_bundle))
+                            0
+                        @else
+                            {{$round_bundle}}%
+                        @endif
                 </td>
             </tr>
             <tr>
@@ -127,11 +131,12 @@
                     @endif
                 </td>
                 <td>
-                    @if(empty($round_Schedule))
-                        0
-                    @else
-                        {{$round_Schedule}}%
-                    @endif
+
+                        @if(empty($round_Schedule))
+                            0
+                        @else
+                            {{100-$round_Schedule}}%
+                        @endif
                 </td>
                 <td>
                     @if(empty($data_Schedule_log))
@@ -144,15 +149,53 @@
                     @if(empty($round_Schedule))
                         0
                     @else
-                        {{100-$round_Schedule}}%
+                        {{$round_Schedule}}%
                     @endif
                 </td>
             </tr>
             </tbody>
         </table>
+{{--        <p>success:</p>--}}
+{{--        <div style="" class="layui-progress layui-progress-big" lay-filter="demo" lay-showPercent="yes">--}}
+{{--            <div class="layui-progress-bar layui-bg-green" lay-percent="{{$round_bundle}}%"></div>--}}
+{{--        </div>--}}
+{{--        <br>--}}
+{{--        <p>faild:</p>--}}
+{{--        <div style="" class="layui-progress layui-progress-big" lay-filter="demo" lay-showPercent="yes">--}}
+{{--            <div class="layui-progress-bar " style="background-color: red" lay-percent="{{100-$round_bundle}}%"></div>--}}
+{{--        </div>--}}
+{{--        <br>--}}
+        <h1>Date report</h1>
+    <div style="height: 200px;width: 600px;overflow-y: auto;">
+        <table class="layui-table" lay-even=""   lay-skin="row" style="">
+            <colgroup>
+                <col width="150">
+                <col width="150">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Run Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($date_list as $k=>$v)
+                <tr>
+                    <td>{{$v}}</td>
+                    <td>{{$k}}</td>
+                </tr>
+            @endforeach
+
+            </tbody>
+        </table>
 
 
     </div>
+
+    </div>
+
+
 </div>
 <br>
 <br>
@@ -160,7 +203,8 @@
 <div style="width: 100%;background-color: #fff;height: 350px;margin-bottom: 20px">
 
 <div style="width: 1280px;height: 400px;margin: 0 auto;padding-top: 20px;padding: 20px">
-
+    <h1>report</h1>
+<br>
 <form action="/index/search"  method="get">
     @csrf
     <input type="hidden" name="sum" value="1">
@@ -212,6 +256,11 @@
         <div id="main3" style="width: 100%;height:400px;"></div>
     </div>
 
+        <div class="grid-demo">
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div id="main6" style="width: 100%;height:400px;"></div>
+    </div>
+
 
 </div>
 </div>
@@ -244,6 +293,12 @@
             ]
         };
         myChart.setOption(option);
+        var fruits = [@foreach($BundleWidth_data as $k=> $v)
+                    '{{$k}}',
+                    @endforeach];
+                    // alert(fruits);
+        // console.log(fruits.sort());
+        // console.log(fruits.reverse());
 
         var myChart = echarts.init(document.getElementById('main2'));
         option = {
@@ -302,6 +357,35 @@
         };
         myChart.setOption(option);
 
+        var myChart = echarts.init(document.getElementById('main6'));
+        option = {
+            title: {
+                text: 'Material Description Description of the failure',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    // name: 'Access From',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                            @foreach($list as $k=>$v)
+                        { value: {{$k}}, name: '{{$v}}' },
+                        @endforeach
+                    ],
+
+                }
+            ]
+        };
+        myChart.setOption(option);
+
     </script>
 @endif
     @if(Session::has('messages'))
@@ -310,5 +394,27 @@
             </div>
         </div>
     @endif
+<script>
+
+
+    layui.use("laydate", function () {
+        var laydate = layui.laydate;
+        //常规用法
+        laydate.render({
+            elem: "#test1",
+            // 当前日期 --添加下面这句
+            value: new Date(),
+            done: function (value, date, endDate) {
+                // console.log(value); //得到日期生成的值，如：2017-08-18
+                // console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                // console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+
+
+            }
+        });
+
+
+    });
+</script>
 </body>
 </html>
